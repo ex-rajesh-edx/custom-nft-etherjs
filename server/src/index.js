@@ -4,11 +4,11 @@ const { pinJSONToIPFS } = require('./utils/pinata');
 const ethers = require("ethers");
 const CryptoJS = require("crypto-js")
 const { contractAddress, alchemyPrivateKey, jsonRpcProviderAddress } = require("./config/variables");
-// const logger = require('./config/logger');
+const logger = require('./config/logger');
 const app = require('./config/express');
 
 // listen to requests
-app.listen(port, () => console.log(`server started on port ${port} (${env})`));
+app.listen(port, () => logger.info(`server started on port ${port} (${env})`));
 
 
 const provider = new ethers.providers.JsonRpcProvider(jsonRpcProviderAddress);
@@ -23,8 +23,6 @@ const signedContract = new ethers.Contract(contractAddress, contractABI, walletW
 
 // send transaction post request
 app.post('/sendTransaction', async (req, res) => {
-    // decrypted data
-    // @ToDo: change the way we use secret key
     const decryptedText = CryptoJS.AES.decrypt(req.body.data, "area56");
     const originalText = JSON.parse(decryptedText.toString(CryptoJS.enc.Utf8));
     const { futureOwner, name, image, description } = originalText;
