@@ -11,7 +11,7 @@ accepted json body
 const axios = require('axios');
 const CryptoJS = require("crypto-js");
 export const minNFTWithExpress = async (JSONBody) => {
-  const url = `http://localhost:5000/sendTransaction`;
+  const url = `http://localhost:5000/send-transaction`;
   //making axios POST request to Pinata ⬇️
   // encrypting with crypto js second parameter is secret key
   const encryptedData = await CryptoJS.AES.encrypt(JSON.stringify(JSONBody), "area56").toString();
