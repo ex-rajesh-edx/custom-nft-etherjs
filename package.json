@@ -16,6 +16,8 @@
   "license": "ISC",
   "dependencies": {
     "concurrently": "^6.3.0",
-    "crypto-js": "^4.1.1"
+    "crypto-js": "^4.1.1",
+    "express-validation": "^3.0.8",
+    "http-status": "^1.5.0"
   }
 }
