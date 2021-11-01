@@ -4,9 +4,14 @@ const compress = require('compression');
 const methodOverride = require('method-override');
 const cors = require('cors');
 const helmet = require('helmet');
-// const routes = require('../api/routes/v1');
+const routes = require("../api/admin/routes/routes");
 const { logs } = require('./variables');
 // const error = require('../api/middlewares/error');
+/**
+* Error handling
+* @ToDo
+* Intercept error and handle with middlewares
+*/
 
 /**
 * Express instance
@@ -35,7 +40,7 @@ app.use(helmet());
 app.use(cors());
 
 // mount api v1 routes
-// app.use('/v1', routes);
+app.use('/', routes);
 
 // if error is not an instanceOf APIError, convert it.
 // app.use(error.converter);
