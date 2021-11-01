@@ -1,27 +1,23 @@
-const express = require('express')
-var cors = require('cors')
+const { port, env } = require('./config/variables');
 const contractABI = require('./contract-abi.json');
-const { pinJSONToIPFS } = require('./pinata');
+const { pinJSONToIPFS } = require('./utils/pinata');
 const ethers = require("ethers");
 const CryptoJS = require("crypto-js")
+const { contractAddress, alchemyPrivateKey, jsonRpcProviderAddress } = require("./config/variables");
+// const logger = require('./config/logger');
+const app = require('./config/express');
 
-const app = express();
-app.use(express.urlencoded({ extended: true }))
-app.use(express.json());
-app.use(cors());
-const port = 5000;
+// listen to requests
+app.listen(port, () => console.log(`server started on port ${port} (${env})`));
 
-const provider = new ethers.providers.JsonRpcProvider("https://eth-ropsten.alchemyapi.io/v2/Omut6TTae4fDt-6XuK5kF1Iy4xeZDUiz");
+
+const provider = new ethers.providers.JsonRpcProvider(jsonRpcProviderAddress);
 
 // get the current signer
 const etherSigner = provider.getSigner();
 console.log("signer url = ", etherSigner.provider.connection.url);
 
-const privateKey = "8131f9de16b97f2651df13db65a38cfa819e4466c94526e38a11aaa27b378479";
-
-const walletWithProvider = new ethers.Wallet(privateKey, provider);
-
-const contractAddress = "0xeD4E0f9a31a4cB34280815d56eFae9569831a5aa";
+const walletWithProvider = new ethers.Wallet(alchemyPrivateKey, provider);
 
 const signedContract = new ethers.Contract(contractAddress, contractABI, walletWithProvider);
 
@@ -63,10 +59,4 @@ app.post('/sendTransaction', async (req, res) => {
         console.log(error);
         res.send({ message: "transaction failed", reason: error.toString() });
     }
-})
-
-
-// run express server
-app.listen(port, () => {
-    console.log(`Custom NFT minter app listening at http://localhost:${port}`)
 })
