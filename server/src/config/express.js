@@ -4,7 +4,8 @@ const compress = require('compression');
 const methodOverride = require('method-override');
 const cors = require('cors');
 const helmet = require('helmet');
-const routes = require("../api/admin/routes/routes");
+const adminRoutes = require("../api/admin/routes/routes");
+const clientRoutes = require("../api/client/routes/routes");
 const { logs } = require('./variables');
 // const error = require('../api/middlewares/error');
 /**
@@ -39,8 +40,10 @@ app.use(helmet());
 // enable CORS - Cross Origin Resource Sharing
 app.use(cors());
 
-// mount api v1 routes
-app.use('/', routes);
+// mount admin routes
+app.use('/admin', adminRoutes);
+// mount client routes
+app.use('/client', clientRoutes);
 
 // if error is not an instanceOf APIError, convert it.
 // app.use(error.converter);
