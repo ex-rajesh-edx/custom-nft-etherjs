@@ -27,4 +27,6 @@ const pinJSONToIPFS = async (JSONBody) => {
         });
 };
 
-exports.pinJSONToIPFS = pinJSONToIPFS;
+module.exports = {
+    pinJSONToIPFS,
+}
