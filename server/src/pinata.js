@@ -1,5 +1,6 @@
-const key = "dc881807789b71051c36";
-const secret = "30306495c61d3f90f8fe6d9e1d134b8e99d3fa24e3f0777e3567ca9b45e6adad";
+// const key = "dc881807789b71051c36";
+// const secret = "30306495c61d3f90f8fe6d9e1d134b8e99d3fa24e3f0777e3567ca9b45e6adad";
+
 
 const axios = require('axios');
 const pinJSONToIPFS = async (JSONBody) => {
