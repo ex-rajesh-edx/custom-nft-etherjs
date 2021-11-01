@@ -1,7 +1,7 @@
 const winston = require('winston');
 
 const logger = winston.createLogger({
-    level: 'info',
+    level: "info",
     format: winston.format.json(),
     transports: [
         //
@@ -19,7 +19,20 @@ const logger = winston.createLogger({
 //
 if (process.env.NODE_ENV !== 'production') {
     logger.add(new winston.transports.Console({
-        format: winston.format.simple(),
+        format: winston.format.combine(
+            winston.format.colorize(),
+            winston.format.simple(),
+            winston.format.colorize(),
+            winston.format.timestamp(),
+            winston.format.printf((info) => {
+                const {
+                    timestamp, level, message, ...args
+                } = info;
+
+                const ts = timestamp.slice(0, 19).replace('T', ' ');
+                return `${ts} [${level}]: ${message} ${Object.keys(args).length ? JSON.stringify(args, null, 2) : ''}`;
+            })
+        ),
     }));
 }
 
