@@ -7,61 +7,97 @@ const web3 = createAlchemyWeb3(alchemyKey);
 const contractABI = require('../contract-abi.json')
 const contractAddress = "0x4C4a07F737Bf57F6632B6CAB089B78f62385aCaE";
 
-export const mintNFT = async(url, name, description) => {
+// mint nft with express erver
+/* 
+accepted json body
+{
+    "futureOwner": "0xDfcf4beF67B116c32e066787b42c0F957409062E",
+    "name": "Express server",
+    "image": "http://thedemobay.com/wp-content/uploads/2014/11/far-cry-4-demo-41.png",
+    "description": "nft minted with express server"
+}
+*/
+const axios = require('axios');
+const CryptoJS = require("crypto-js");
+export const minNFTWithExpress = async (JSONBody) => {
+  const url = `http://localhost:5000/sendTransaction`;
+  //making axios POST request to Pinata ⬇️
+  // encrypting with crypto js second parameter is secret key
+  const encryptedData = await CryptoJS.AES.encrypt(JSON.stringify(JSONBody), "area56").toString();
+  const dataToBeSent = { data: encryptedData };
+  console.log(dataToBeSent);
+  return axios
+    .post(url, dataToBeSent)
+    .then(function (response) {
+      return {
+        success: true,
+        response: response
+      };
+    })
+    .catch(function (error) {
+      console.log(error)
+      return {
+        success: false,
+        message: error.message,
+      }
+    });
+};
 
-    //error handling
-    if (url.trim() === "" || (name.trim() === "" || description.trim() === "")) { 
-        return {
-            success: false,
-            status: "❗Please make sure all fields are completed before minting.",
-        }
+export const mintNFT = async (url, name, description) => {
+
+  //error handling
+  if (url.trim() === "" || (name.trim() === "" || description.trim() === "")) {
+    return {
+      success: false,
+      status: "❗Please make sure all fields are completed before minting.",
     }
+  }
 
-    //make metadata
-    // eslint-disable-next-line no-new-object
-    const metadata = new Object();
-    metadata.name = name;
-    metadata.image = url;
-    metadata.description = description;
+  //make metadata
+  // eslint-disable-next-line no-new-object
+  const metadata = new Object();
+  metadata.name = name;
+  metadata.image = url;
+  metadata.description = description;
 
-    //pinata pin request
-    const pinataResponse = await pinJSONToIPFS(metadata);
-    if (!pinataResponse.success) {
-        return {
-            success: false,
-            status: "😢 Something went wrong while uploading your tokenURI.",
-        }
+  //pinata pin request
+  const pinataResponse = await pinJSONToIPFS(metadata);
+  if (!pinataResponse.success) {
+    return {
+      success: false,
+      status: "😢 Something went wrong while uploading your tokenURI.",
+    }
   }
   // getting pinta uri of our nft item/asset
-    const tokenURI = pinataResponse.pinataUrl;  
+  const tokenURI = pinataResponse.pinataUrl;
 
-    //load smart contract
-    window.contract = await new web3.eth.Contract(contractABI, contractAddress);//loadContract();
+  //load smart contract
+  window.contract = await new web3.eth.Contract(contractABI, contractAddress);//loadContract();
 
-    //set up your Ethereum transaction
-    const transactionParameters = {
-        to: contractAddress, // Required except during contract publications.
-        from: window.ethereum.selectedAddress, // must match user's active address.
-        'data': window.contract.methods.mintNFT(window.ethereum.selectedAddress, tokenURI).encodeABI() //make call to NFT smart contract 
-    };
+  //set up your Ethereum transaction
+  const transactionParameters = {
+    to: contractAddress, // Required except during contract publications.
+    from: window.ethereum.selectedAddress, // must match user's active address.
+    'data': window.contract.methods.mintNFT(window.ethereum.selectedAddress, tokenURI).encodeABI() //make call to NFT smart contract 
+  };
 
-    //sign transaction via Metamask
-    try {
-        const txHash = await window.ethereum
-            .request({
-                method: 'eth_sendTransaction',
-                params: [transactionParameters],
-            });
-        return {
-            success: true,
-            status: "✅ Check out your transaction on Etherscan: https://ropsten.etherscan.io/tx/" + txHash
-        }
-    } catch (error) {
-        return {
-            success: false,
-            status: "😥 Something went wrong: " + error.message
-        }
+  //sign transaction via Metamask
+  try {
+    const txHash = await window.ethereum
+      .request({
+        method: 'eth_sendTransaction',
+        params: [transactionParameters],
+      });
+    return {
+      success: true,
+      status: "✅ Check out your transaction on Etherscan: https://ropsten.etherscan.io/tx/" + txHash
     }
+  } catch (error) {
+    return {
+      success: false,
+      status: "😥 Something went wrong: " + error.message
+    }
+  }
 }
 
 export const connectWallet = async () => {

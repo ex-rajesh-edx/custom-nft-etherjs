@@ -1,4 +1,5 @@
 const express = require('express')
+var cors = require('cors')
 const bodyParser = require('body-parser');
 const contractABI = require('./contract-abi.json');
 const { pinJSONToIPFS } = require('./pinata');
@@ -7,6 +8,7 @@ const ethers = require("ethers");
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json());
+app.use(cors());
 const port = 5000;
 
 const provider = new ethers.providers.JsonRpcProvider("https://eth-ropsten.alchemyapi.io/v2/Omut6TTae4fDt-6XuK5kF1Iy4xeZDUiz");
@@ -15,17 +17,22 @@ const provider = new ethers.providers.JsonRpcProvider("https://eth-ropsten.alche
 const etherSigner = provider.getSigner();
 console.log("signer url = ", etherSigner.provider.connection.url);
 
-const privateKey = "037b879eb96ee5bf1f3d35c86f3f1ec16391798e08a1ae3a4d318ba651a5d9ac";
+const privateKey = "8131f9de16b97f2651df13db65a38cfa819e4466c94526e38a11aaa27b378479";
 
 const walletWithProvider = new ethers.Wallet(privateKey, provider);
 
-const contractAddress = "0x4C4a07F737Bf57F6632B6CAB089B78f62385aCaE";
+const contractAddress = "0xeD4E0f9a31a4cB34280815d56eFae9569831a5aa";
 
 const signedContract = new ethers.Contract(contractAddress, contractABI, walletWithProvider);
 
+const CryptoJS = require("crypto-js")
 // send transaction post request
 app.post('/sendTransaction', async (req, res) => {
-    const { from, to, name, image, description } = req.body;
+    // decrypted data
+    // @ToDo: change the way we use secret key
+    const decryptedText = CryptoJS.AES.decrypt(req.body.data, "area56");
+    const originalText = JSON.parse(decryptedText.toString(CryptoJS.enc.Utf8));
+    const { futureOwner, name, image, description } = originalText;
     const ipFsData = {
         name: name,
         image: image,
@@ -33,19 +40,18 @@ app.post('/sendTransaction', async (req, res) => {
     }
     const pinataResponse = await pinJSONToIPFS(ipFsData);
     if (!pinataResponse.success) {
-        res.send({ message: "something went wrong", reason: "invalid ipfs data" });
+        res.end({ message: "something went wrong", reason: "invalid ipfs data" });
     }
     const tokenURI = pinataResponse?.pinataUrl;
     try {
-        signedContract.mintNFT(from, tokenURI).then((data) => {
+        signedContract.mintToken(futureOwner, tokenURI).then((data) => {
             // send some ethers to an etherium account
             walletWithProvider.sendTransaction({
-                from: from,
-                to: to,
+                to: futureOwner,
                 value: ethers.utils.parseEther("0.00000001"),
                 gasLimit: "21000",
             }).then(result => {
-                res.send({ message: "transction successfull", hash: result.hash, EtherScanUrl: "https://ropsten.etherscan.io/tx/" + result.hash, ipFs: tokenURI, nftResult: data });
+                res.send({ message: "transction successfull", hash: result.hash, EtherScanUrl: "https://ropsten.etherscan.io/tx/" + data?.hash, ipFs: tokenURI, nftResult: data });
                 console.log("transction successfull = ", result.hash);
             }).catch((error) => {
                 res.send({ message: "failed", reason: error?.reason })
