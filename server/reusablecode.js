@@ -17,7 +17,7 @@
 // daiContract.balanceOf("0xDfcf4beF67B116c32e066787b42c0F957409062E").then(res => {
 //     console.log("Balance of this transaction = ", ethers.utils.formatEther(res));
 // }).catch((error) => {
-//     console.log("an error occurred");
+//     console.log("an error occurred"); 
 // })
 // get name
 daiContract.name().then((res) => console.log("Name of the transaction = ", res))
