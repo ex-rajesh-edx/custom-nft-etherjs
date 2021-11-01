@@ -1,13 +1,13 @@
 const express = require('express')
 var cors = require('cors')
-const bodyParser = require('body-parser');
 const contractABI = require('./contract-abi.json');
 const { pinJSONToIPFS } = require('./pinata');
 const ethers = require("ethers");
+const CryptoJS = require("crypto-js")
 
 const app = express();
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json());
 app.use(cors());
 const port = 5000;
 
@@ -25,7 +25,6 @@ const contractAddress = "0xeD4E0f9a31a4cB34280815d56eFae9569831a5aa";
 
 const signedContract = new ethers.Contract(contractAddress, contractABI, walletWithProvider);
 
-const CryptoJS = require("crypto-js")
 // send transaction post request
 app.post('/sendTransaction', async (req, res) => {
     // decrypted data
