@@ -1,12 +1,12 @@
 import express from "express";
-import controllers from "../controller/transaction.controller";
+import { controllers } from "../controller/transaction.controller";
 
-const router = express.Router();
+const clientRoutes = express.Router();
 
-router.route("/send-transaction")
+clientRoutes.route("/send-transaction")
     .post(controllers.sendTransaction);
 // router.route("/read-transaction")
 //     .post();
 
-module.exports = router;
+export default clientRoutes;
 

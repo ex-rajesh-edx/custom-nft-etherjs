@@ -1,8 +1,8 @@
-const { pinataKey, pinataSecretKey } = require("../config/variables");
-const axios = require('axios');
+import axios from "axios";
+import { pinataKey, pinataSecretKey } from "../config/variables";
 
 // call pinata cloud api to store the nft and its details
-const pinJSONToIPFS = async (JSONBody) => {
+export const pinJSONToIPFS = async (JSONBody) => {
     const url = `https://api.pinata.cloud/pinning/pinJSONToIPFS`;
     //making axios POST request to Pinata ⬇️
     return axios
@@ -26,7 +26,3 @@ const pinJSONToIPFS = async (JSONBody) => {
             }
         });
 };
-
-module.exports = {
-    pinJSONToIPFS,
-}

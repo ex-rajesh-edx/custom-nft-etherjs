@@ -1,5 +1,5 @@
 import app from "./config/express";
-import { logger } from "./config/logger";
+import logger from "./config/logger";
 import { env, port } from "./config/variables";
 
 

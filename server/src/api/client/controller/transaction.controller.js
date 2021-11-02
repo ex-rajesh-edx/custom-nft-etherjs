@@ -1,10 +1,10 @@
-const ethers = require("ethers");
-const httpStatus = require("http-status")
-const { pinJSONToIPFS } = require("../../../utils/pinata");
+import { ethers } from "ethers";
+import httpStatus from "http-status";
 import { signedContract, walletWithProvider } from "../../../config/ether-configs";
+import { pinJSONToIPFS } from "../../../utils/pinata";
 
 // create a nft
-exports.sendTransaction = async (req, res) => {
+const sendTransaction = async (req, res) => {
     const { futureOwner, name, image, description } = req.body;
     const ipFsData = {
         name: name,
@@ -45,4 +45,8 @@ exports.sendTransaction = async (req, res) => {
         res.status(httpStatus.EXPECTATION_FAILED)
         res.send({ message: "something went wrong", reason: error.toString() });
     }
+}
+
+export const controllers = {
+    sendTransaction
 }

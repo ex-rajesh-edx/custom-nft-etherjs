@@ -1,7 +1,7 @@
-const ethers = require("ethers");
-const contractABI = require("./contract-abi.json");
-
+import { ethers } from "ethers";
+import contractABI from "./contract-abi.json";
 import { alchemyPrivateKey, contractAddress, jsonRpcProviderAddress } from "./variables";
+
 
 export const provider = new ethers.providers.JsonRpcProvider(jsonRpcProviderAddress);
 

@@ -1,13 +1,13 @@
-const express = require('express');
-const morgan = require('morgan');
-const compress = require('compression');
-const methodOverride = require('method-override');
-const cors = require('cors');
-const helmet = require('helmet');
-const adminRoutes = require("../api/admin/routes/routes");
-const clientRoutes = require("../api/client/routes/routes");
-const { logs } = require('./variables');
-const error = require('../api/middlewares/error');
+import compress from "compression";
+import cors from "cors";
+import express from "express";
+import helmet from "helmet";
+import methodOverride from "method-override";
+import morgan from "morgan";
+import adminRoutes from "../api/admin/routes/routes";
+import clientRoutes from "../api/client/routes/routes";
+import { error } from "../api/middlewares/error";
+import { logs } from "./variables";
 /**
 * Error handling
 * @ToDo
@@ -54,4 +54,4 @@ app.use(error.notFound);
 // error handler, send stacktrace only during development
 app.use(error.handler);
 
-module.exports = app;
+export default app;
