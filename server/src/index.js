@@ -1,7 +1,7 @@
-const { port, env } = require('./config/variables');
+import app from "./config/express";
+import { logger } from "./config/logger";
+import { env, port } from "./config/variables";
 
-const logger = require('./config/logger');
-const app = require('./config/express');
 
 // listen to requests
 app.listen(port, () => logger.info(`server started on port ${port} (${env})`));
