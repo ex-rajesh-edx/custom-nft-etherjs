@@ -47,6 +47,20 @@ const sendTransaction = async (req, res) => {
     }
 }
 
+const getNFTByTokenNo = async (req, res) => {
+    const { tokenNumber } = req.body;
+    signedContract.tokenURI(tokenNumber).then((response) => {
+        res.status(httpStatus.OK);
+        res.send({ message: "success", result: response });
+        res.end();
+    }).catch((error) => {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR);
+        res.send({ message: "failed", reason: error?.reason });
+        res.end();
+    })
+}
+
 export const controllers = {
-    sendTransaction
+    sendTransaction,
+    getNFTByTokenNo
 }

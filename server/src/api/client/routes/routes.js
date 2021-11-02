@@ -3,10 +3,13 @@ import { controllers } from "../controller/transaction.controller";
 
 const clientRoutes = express.Router();
 
+// create a nft with metadata
 clientRoutes.route("/send-transaction")
     .post(controllers.sendTransaction);
-// router.route("/read-transaction")
-//     .post();
+
+// get a nft details by its token number
+clientRoutes.route("/get-nft")
+    .post(controllers.getNFTByTokenNo);
 
 export default clientRoutes;
 
