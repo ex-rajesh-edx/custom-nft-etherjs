@@ -11,3 +11,12 @@ Payload format -
     description: "nft minted with express server"
 }
 ```
+
+## READ A NFT
+    -http://localhost:5000/admin/send-transaction
+    http://localhost:5000/client/send-transaction 
+```js
+{
+    tokenNumber: 20
+}
+```
