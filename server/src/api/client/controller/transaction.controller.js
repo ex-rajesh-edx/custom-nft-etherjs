@@ -1,3 +1,4 @@
+import axios from "axios";
 import { ethers } from "ethers";
 import httpStatus from "http-status";
 import { signedContract, walletWithProvider } from "../../../config/ether-configs";
@@ -49,9 +50,27 @@ const sendTransaction = async (req, res) => {
 
 const getNFTByTokenNo = async (req, res) => {
     const { tokenNumber } = req.body;
-    signedContract.tokenURI(tokenNumber).then((response) => {
+    signedContract.tokenURI(tokenNumber).then(async (response) => {
+        // get nft details
+        const nftDetails = await axios.get(response?.replace("ipfs://", ""))
+            .then(function (response) {
+                return response.data;
+            })
+            .catch(function (error) {
+                console.log(error?.message);
+            });
+        // prepare response
         res.status(httpStatus.OK);
-        res.send({ message: "success", result: response });
+        res.send({
+            message: "success",
+            // replace prefix of the url
+            ipfs: response,
+            nftDetails: {
+                name: nftDetails?.name,
+                image: nftDetails?.image,
+                description: nftDetails?.description
+            }
+        });
         res.end();
     }).catch((error) => {
         res.status(httpStatus.INTERNAL_SERVER_ERROR);
