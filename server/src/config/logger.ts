@@ -36,6 +36,7 @@ logger.add(new winston.transports.Console({
 }));
 
 logger.stream = {
+    // @ts-ignore
     write: (message) => {
         logger.info(message.trim());
     },

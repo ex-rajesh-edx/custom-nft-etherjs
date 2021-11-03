@@ -6,8 +6,8 @@ import { alchemyPrivateKey, contractAddress, jsonRpcProviderAddress } from "./va
 export const provider = new ethers.providers.JsonRpcProvider(jsonRpcProviderAddress);
 
 // get the current signer
-export const etherSigner = provider.getSigner();
-console.log("signer url = ", etherSigner.provider.connection.url);
+// export const etherSigner = provider.getSigner();
+// console.log("signer url = ", etherSigner.provider.connection.url);
 
 export const walletWithProvider = new ethers.Wallet(alchemyPrivateKey, provider);
 
