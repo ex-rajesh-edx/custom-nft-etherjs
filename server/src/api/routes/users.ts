@@ -1,5 +1,5 @@
 import express from "express";
-import { controllers } from "../controller/transaction.controller";
+import { controllers } from "../interfaces/IUsers";
 
 const clientRoutes = express.Router();
 

@@ -4,9 +4,9 @@ import express from "express";
 import helmet from "helmet";
 import methodOverride from "method-override";
 import morgan from "morgan";
-import adminRoutes from "../api/admin/routes/routes";
-import clientRoutes from "../api/client/routes/routes";
 import { error } from "../api/middlewares/error";
+import adminRoutes from "../api/routes/admin";
+import clientRoutes from "../api/routes/users";
 import { logs } from "./variables";
 /**
 * Error handling

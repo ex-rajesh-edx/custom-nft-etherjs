@@ -1,35 +1,25 @@
-import CryptoJS from "crypto-js";
+import axios from "axios";
 import { ethers } from "ethers";
 import httpStatus from "http-status";
-import { signedContract, walletWithProvider } from "../../../config/ether-configs";
-const { apiEncryptionSecrete } = require("../../../config/variables");
-const { pinJSONToIPFS } = require("../../../utils/pinata");
+import { signedContract, walletWithProvider } from "../../config/ether-configs";
+import { pinJSONToIPFS } from "../../utils/pinata";
 
 // create a nft
 const sendTransaction = async (req, res) => {
-    // decrypt request body
-    let decryptedText;
-    let originalText;
-    try {
-        decryptedText = CryptoJS.AES.decrypt(req.body.data, apiEncryptionSecrete);
-        originalText = JSON.parse(decryptedText.toString(CryptoJS.enc.Utf8));
-    } catch (error) {
-        res.status(httpStatus.INTERNAL_SERVER_ERROR)
-        res.end("failed to decrypt params");
-        // res.send({ message: "failed to decrypt params", status: 500 })
-    }
-    // destructure body parameters
-    const { futureOwner, name, image, description } = originalText;
+    const { futureOwner, name, image, description, attributes, external_url } = req.body;
     const ipFsData = {
         name: name,
         image: image,
         description: description,
+        external_url: external_url,
+        attributes: attributes
     }
     // submit data to pinata cloud and get back a response
     const pinataResponse = await pinJSONToIPFS(ipFsData);
     if (!pinataResponse.success) {
         res.end({ message: "something went wrong", reason: "invalid ipfs data" });
     }
+    // @ts-ignore
     const tokenURI = pinataResponse?.pinataUrl;
 
     // mint nft
@@ -61,8 +51,38 @@ const sendTransaction = async (req, res) => {
     }
 }
 
-
+const getNFTByTokenNo = async (req, res) => {
+    const { tokenNumber } = req.body;
+    signedContract.tokenURI(tokenNumber).then(async (response) => {
+        // get nft details
+        const nftDetails = await axios.get(response?.replace("ipfs://", ""))
+            .then(function (response) {
+                return response.data;
+            })
+            .catch(function (error) {
+                console.log(error?.message);
+            });
+        // prepare response
+        res.status(httpStatus.OK);
+        res.send({
+            message: "success",
+            // replace prefix of the url
+            ipfs: response,
+            nftDetails: {
+                name: nftDetails?.name,
+                image: nftDetails?.image,
+                description: nftDetails?.description
+            }
+        });
+        res.end();
+    }).catch((error) => {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR);
+        res.send({ message: "failed", reason: error?.reason });
+        res.end();
+    })
+}
 
 export const controllers = {
     sendTransaction,
+    getNFTByTokenNo
 }

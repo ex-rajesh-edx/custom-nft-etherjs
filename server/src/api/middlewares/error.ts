@@ -2,7 +2,6 @@ import expressValidation from "express-validation";
 import httpStatus from 'http-status';
 import { env } from '../../config/variables';
 import APIError from '../../errors/api-error';
-
 /**
  * Error handler. Send stacktrace only during development
  * @public
@@ -33,11 +32,15 @@ const converter = (err, req, res, next) => {
     if (err instanceof expressValidation.ValidationError) {
         convertedError = new APIError({
             message: 'Validation Error',
+            // @ts-ignore
             errors: err.errors,
+            // @ts-ignore
             status: err.status,
+            // @ts-ignore
             stack: err.stack,
         });
     } else if (!(err instanceof APIError)) {
+        // @ts-ignore
         convertedError = new APIError({
             message: err.message,
             status: err.status,
@@ -45,7 +48,7 @@ const converter = (err, req, res, next) => {
         });
     }
 
-    return handler(convertedError, req, res);
+    return handler(convertedError, req, res, next);
 };
 
 /**
@@ -53,11 +56,12 @@ const converter = (err, req, res, next) => {
  * @public
  */
 const notFound = (req, res, next) => {
+    // @ts-ignore
     const err = new APIError({
         message: 'Not found',
         status: httpStatus.NOT_FOUND,
     });
-    return handler(err, req, res);
+    return handler(err, req, res, next);
 };
 
 export const error = {
